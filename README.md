@@ -120,23 +120,23 @@ Shows open threads, character states, unresolved setups (Chekhov's guns), and st
 
 ## Commands
 
-```
-/graphify-novel init "<premise>"                 # scaffold bible from a premise
-/graphify-novel init --from <file>               # scaffold bible from a premise file
-/graphify-novel init --from-chapters [--batch N] # build bible by sweeping existing chapters (default batch: 5)
-/graphify-novel review [file] [--intent "..."]   # review a chapter/passage against the bible
-/graphify-novel review --passage                 # paste a passage inline (AI assistant will prompt)
-/graphify-novel update [file] [--intent "..."]   # update bible from a chapter
-/graphify-novel update --manual ["..."]          # interactive update
-/graphify-novel update --lore "<lore>"           # add/edit bible lore directly — no chapter scanned
-/graphify-novel query "<question>"               # relationship query across the full story graph
-/graphify-novel query "<question>" --dfs         # depth-first — trace a specific path
-/graphify-novel path "Node A" "Node B"           # shortest connection between two story elements
-/graphify-novel status                           # open threads, character states, unresolved items
-/graphify-novel thread new "<name>"              # create a new plot thread
-/graphify-novel thread resolve <slug>            # mark a thread resolved
-/graphify-novel thread list                      # list all threads with status
-```
+| Command | Description |
+|---------|-------------|
+| `/graphify-novel init "<premise>"` | scaffold bible from a premise |
+| `/graphify-novel init --from <file>` | scaffold bible from a premise file |
+| `/graphify-novel init --from-chapters [--batch N]` | build bible by sweeping existing chapters (default batch: 5) |
+| `/graphify-novel review [file] [--intent "..."]` | review a chapter/passage against the bible |
+| `/graphify-novel review --passage` | paste a passage inline (AI assistant will prompt) |
+| `/graphify-novel update [file] [--intent "..."]` | update bible from a chapter |
+| `/graphify-novel update --manual ["..."]` | interactive update |
+| `/graphify-novel update --lore "<lore>"` | add/edit bible lore directly — no chapter scanned |
+| `/graphify-novel query "<question>"` | relationship query across the full story graph |
+| `/graphify-novel query "<question>" --dfs` | depth-first — trace a specific path |
+| `/graphify-novel path "Node A" "Node B"` | shortest connection between two story elements |
+| `/graphify-novel status` | open threads, character states, unresolved items |
+| `/graphify-novel thread new "<name>"` | create a new plot thread |
+| `/graphify-novel thread resolve <slug>` | mark a thread resolved |
+| `/graphify-novel thread list` | list all threads with status |
 
 ---
 
