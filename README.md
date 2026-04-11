@@ -43,7 +43,7 @@ npx skills add Anshler/graphify-novel
   .graphifyignore
 ```
 
-You can start with an empty project. But if it's an existing project, make sure your finished chapters and static files (images) are in `chapters/` and in-progress drafts are in `draft/`.
+You can start with an empty project. But if it's an existing project, make sure your finished chapters are in `chapters/`, in-progress drafts are in `draft/` and static files in `static/`.
 
 If you already had an existing bible/story-tracking structure, it won't be compatible. Move them outside the project then retrofit them into the new structure after you initialize bible.
 
