@@ -78,15 +78,18 @@ Scaffolds `bible/`, populates characters, threads, world files, and builds the i
 /graphify-novel review --passage
 ```
 
-Flags contradictions, continuity gaps, and thread opportunities. Never writes to the bible, findings are proposals only.
+Flags contradictions, continuity gaps, and thread opportunities. For better review, state your intent clearly.
+
+This command never writes to the bible, findings are proposals only.
 
 When ussing `--passage` the AI will prompt you to paste it in chat.
 
-### Commit updates after writing
+### Update knowledge graph after writing
 ```
 /graphify-novel update ch03.md
-/graphify-novel update --manual
+/graphify-novel update ch03.md --intent "Resolve the strange disappearance plot point from ch01"
 /graphify-novel update --lore "The Binding Pact was signed 40 years before the story begins"
+/graphify-novel update --manual
 ```
 
 Ideally, use it after you already reviewed the draft.
