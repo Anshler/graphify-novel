@@ -87,7 +87,7 @@ When ussing `--passage` the AI will prompt you to paste it in chat.
 ### Update knowledge graph after writing
 ```
 /graphify-novel update ch03.md
-/graphify-novel update ch03.md --intent "Resolve the strange disappearance plot point from ch01"
+/graphify-novel update ch03.md --intent "establish that Elara knows more than she admits"
 /graphify-novel update --lore "The Binding Pact was signed 40 years before the story begins"
 /graphify-novel update --manual
 ```
