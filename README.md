@@ -20,8 +20,9 @@ This skill uses [graphify](https://github.com/safishamsi/graphify) under the hoo
 
 ```
 <your-project>/
-  chapters/          ← manuscript files
+  chapters/          ← manuscript files (preferably .txt or .md)
   draft/             ← work-in-progress (excluded from graph)
+  static/            ← static files, images, etc (excluded from graph)
   bible/
     premise.md
     timeline.md
@@ -32,17 +33,17 @@ This skill uses [graphify](https://github.com/safishamsi/graphify) under the hoo
   .graphifyignore
 ```
 
-You can start with an empty project. But if it's an existing project, make sure your finished chapters are in the `chapters/` and in-progress drafts are in `draft/`.
+You can start with an empty project. But if it's an existing project, make sure your finished chapters and static files (images) are in `chapters/` and in-progress drafts are in `draft/`.
 
-If you already had an existing bible, move them outside the project then retrofit them into the new structure after you initialize bible.
+If you already had an existing bible/story-tracking structure, it won't be compatible. Move them outside the project then retrofit them into the new structure after you initialize bible.
 
 ---
 
 ## Usage
 
-Run any command from within your project folder in your AI assistant chat.
+Run command from within your project folder in your AI assistant chat.
 
-### Initialize a bible from a premise
+### Initialize a bible from a premise (fresh start)
 ```
 /graphify-novel init "A disgraced archivist discovers the empire's founding records were forged, and the proof is hidden in a vault only the guilty can open."
 
@@ -58,22 +59,29 @@ Run any command from within your project folder in your AI assistant chat.
 ```
 Scaffolds `bible/`, populates characters, threads, world files, and builds the initial knowledge graph.
 
-`--from-chapters` is for porting an existing novel. It sweeps all files in `chapters/` in batches (default: 5) using sub-agents, each working in a fresh context so chapter count is not limited by the context window. Use `--batch N` to override the batch size.
+`--from-chapters` is for porting an existing story. It sweeps all files in `chapters/` in batches (default: 5) using sub-agents, each working in a fresh context so chapter count is not limited by the context window. Use `--batch N` to override the batch size.
 
-### Review a chapter for consistency
+### Review a draft for consistency
 ```
-/graphify-novel review chapters/ch03.md
-/graphify-novel review chapters/ch03.md --intent "establish that Elara knows more than she admits"
+/graphify-novel review ch03.md
+/graphify-novel review ch03.md --intent "establish that Elara knows more than she admits"
 /graphify-novel review --passage
 ```
+
 Flags contradictions, continuity gaps, and thread opportunities. Never writes to the bible, findings are proposals only.
+
+When ussing `--passage` the AI will prompt you to paste it in chat.
 
 ### Commit updates after writing
 ```
-/graphify-novel update chapters/ch03.md
+/graphify-novel update ch03.md
 /graphify-novel update --manual
 /graphify-novel update --lore "The Binding Pact was signed 40 years before the story begins"
 ```
+
+Ideally, use it after you already reviewed the draft.
+
+In `--manual` mode, the AI will hold conversation with you to identify the change.
 
 ### Check story state before starting a chapter
 ```

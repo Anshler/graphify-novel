@@ -34,6 +34,7 @@ trigger: /graphify-novel
 <project-folder>/
   chapters/                    ← manuscript files
   draft/                       ← work-in-progress files (excluded from graph extraction)
+  static/                      ← static files, images, etc (excluded from graph extraction)
   bible/
     premise.md
     timeline.md                ← ordered events with IDs (E001, E002 …)
@@ -50,12 +51,13 @@ trigger: /graphify-novel
     graph.json
     graph.html
     GRAPH_REPORT.md
-  .graphifyignore              ← excludes graphify-out/, draft/ from extraction
+  .graphifyignore              ← excludes graphify-out/, draft/, static/ from extraction
 ```
 
 `bible/` — structured state: what is true now. Queried by direct file reads.
 `graphify-out/` — relationship graph: how things connect across the full story. Built from both `chapters/` and `bible/`. Neither replaces the other.
 `draft/` — excluded from graphify extraction; use for in-progress passages not yet canon.
+`static/` — excluded from graphify extraction; use for images, gifs, or any files you don't want in the bible or graph.
 
 **Entity identity:** See General Rules → Entity merging.
 
@@ -218,6 +220,7 @@ Present what you extracted. Ask targeted questions only for consequential ambigu
 ```
 mkdir -p <project-folder>/chapters
 mkdir -p <project-folder>/draft
+mkdir -p <project-folder>/static
 mkdir -p <project-folder>/bible/characters
 mkdir -p <project-folder>/bible/threads
 mkdir -p <project-folder>/bible/world
@@ -227,6 +230,7 @@ Create `<project-folder>/.graphifyignore` if it does not already exist:
 ```
 graphify-out/
 draft/
+static/
 ```
 
 **Step 4 — Populate the bible.** Write all files per schemas above:
@@ -517,7 +521,7 @@ Structural hubs:  ← omit if GRAPH_REPORT.md does not exist
   Elara            — bridges Archive / Ashfields / Pact communities
   The Binding Pact — central to all three main communities
 
-Next: /graphify-novel review <chapter> or /graphify-novel update <chapter>
+Next: /graphify-novel review <draft> or /graphify-novel update <draft>
 ```
 
 ---
