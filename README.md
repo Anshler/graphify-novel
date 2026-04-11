@@ -14,6 +14,16 @@ This skill uses [graphify](https://github.com/safishamsi/graphify) under the hoo
 
 - [graphify](https://github.com/safishamsi/graphify) skill installed
 
+- If not already, the coding assistant will help install it for you when running graphify-novel
+
+---
+
+## Installation
+
+```bash
+npx skills add Anshler/graphify-novel
+```
+
 ---
 
 ## Project structure
