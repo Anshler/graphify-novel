@@ -14,7 +14,7 @@ This skill uses [graphify](https://github.com/safishamsi/graphify) under the hoo
 
 - Any coding assistant (Copilot, Claude, etc)
 
-- [graphify](https://github.com/safishamsi/graphify) skill installed. If not already, the coding assistant will help install it for you when running graphify-novel
+- [graphify](https://github.com/safishamsi/graphify) skill installed. If not already installed, the assistant will prompt you to install it manually before continuing.
 
 ---
 
@@ -129,7 +129,7 @@ Shows open threads, character states, unresolved setups (Chekhov's guns), and st
 | `/graphify-novel review --passage` | paste a passage inline (AI assistant will prompt) |
 | `/graphify-novel update [file] [--intent "..."]` | update bible from a chapter |
 | `/graphify-novel update --manual ["..."]` | interactive update |
-| `/graphify-novel update --lore "<lore>"` | add/edit bible lore directly — no chapter scanned |
+| `/graphify-novel update --lore "<lore>"` | add/edit bible lore |
 | `/graphify-novel query "<question>"` | relationship query across the full story graph |
 | `/graphify-novel query "<question>" --dfs` | depth-first — trace a specific path |
 | `/graphify-novel path "Node A" "Node B"` | shortest connection between two story elements |
