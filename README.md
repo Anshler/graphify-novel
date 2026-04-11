@@ -12,24 +12,7 @@ This skill uses [graphify](https://github.com/safishamsi/graphify) under the hoo
 
 ## Prerequisites
 
-- [Claude Code](https://claude.ai/code) installed
-- [graphify](https://github.com/safishamsi/graphify) skill installed at `~/.claude/skills/graphify/`
-
----
-
-## Installation
-
-**1. Clone the skill:**
-```bash
-git clone https://github.com/Anshler/graphify-novel ~/.claude/skills/graphify-novel
-```
-
-**2. Register the trigger in `~/.claude/CLAUDE.md`:**
-```markdown
-# graphify-novel
-- **graphify-novel** (`~/.claude/skills/graphify-novel/SKILL.md`) - novel writing assistant with graphify knowledge graph. Trigger: `/graphify-novel`
-When the user types `/graphify-novel`, invoke the Skill tool with `skill: "graphify-novel"` before doing anything else.
-```
+- [graphify](https://github.com/safishamsi/graphify) skill installed
 
 ---
 
@@ -57,7 +40,7 @@ If you already had an existing bible, move them outside the project then retrofi
 
 ## Usage
 
-Run any command from within your project folder in Claude Code.
+Run any command from within your project folder in your AI assistant chat.
 
 ### Initialize a bible from a premise
 ```

@@ -13,7 +13,7 @@ trigger: /graphify-novel
 /graphify-novel init --from <file>               # scaffold bible from a premise file
 /graphify-novel init --from-chapters [--batch N] # build bible by sweeping existing chapters (default batch: 5)
 /graphify-novel review [file] [--intent "..."]   # review a chapter/passage against the bible
-/graphify-novel review --passage                 # paste a passage inline (Claude will prompt)
+/graphify-novel review --passage                 # paste a passage inline (AI assistant will prompt)
 /graphify-novel update [file] [--intent "..."]   # update bible from a chapter
 /graphify-novel update --manual ["..."]          # interactive update
 /graphify-novel update --lore "<lore>"           # add/edit bible lore directly — no chapter scanned
@@ -63,7 +63,7 @@ trigger: /graphify-novel
 
 ## Prerequisite: graphify
 
-Check whether `~/.claude/skills/graphify/SKILL.md` exists.
+Check whether `graphify` skill exists.
 
 If it does **not** exist, output:
 ```
@@ -584,7 +584,7 @@ If called with no subcommand, an unrecognized subcommand, or missing required ar
 
 **Ask vs. infer:** Infer if clearly established in the bible and the passage is consistent. Ask if ambiguous and the interpretation affects bible state. Never ask about stylistic or prose choices — only story-state changes. Batch all questions into one message.
 
-**`--intent` flag:** When provided, it takes priority over Claude's inferences. Apply without re-asking. In review, use it to suppress noise — a gap that the intent explains is not a contradiction; thread opportunities are only flagged if they align with the stated intent.
+**`--intent` flag:** When provided, it takes priority over AI assistant's inferences. Apply without re-asking. In review, use it to suppress noise — a gap that the intent explains is not a contradiction; thread opportunities are only flagged if they align with the stated intent.
 
 **Never overwrite without confirmation:** In review mode, never write to any file — findings are proposals only. In update mode, resolve all ambiguity first, then write.
 
