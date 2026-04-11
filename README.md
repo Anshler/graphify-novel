@@ -147,3 +147,7 @@ Shows open threads, character states, unresolved setups (Chekhov's guns), and st
 `graphify-out/` is the relationship layer, a knowledge graph extracted from your full manuscript and bible. It surfaces implicit connections and structural patterns that direct file reads won't catch.
 
 Neither replaces the other. The bible answers "where is Elara now?"; the graph answers "how did Elara and the Obsidian Throne end up connected?"
+
+### Tips
+
+If you're unsure what command to use, just chat in natural language, ask the AI to look into the graphify-novel skill.
