@@ -12,9 +12,9 @@ This skill uses [graphify](https://github.com/safishamsi/graphify) under the hoo
 
 ## Prerequisites
 
-- [graphify](https://github.com/safishamsi/graphify) skill installed
+- Any coding assistant (Copilot, Claude, etc)
 
-- If not already, the coding assistant will help install it for you when running graphify-novel
+- [graphify](https://github.com/safishamsi/graphify) skill installed. If not already, the coding assistant will help install it for you when running graphify-novel
 
 ---
 
