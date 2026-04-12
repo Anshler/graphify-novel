@@ -431,53 +431,42 @@ If contradictions are resolved, these updates are queued for /graphify-novel upd
 
 ### Modes
 - **`[file] [--intent "..."]`** — derive updates from a chapter file.
-- **`--manual`** — conversational update. Ask: "Which files changed, or describe what's different." Accept files, prose, or both.
-- **`--lore "<lore>"`** — apply inline lore text.
+- **`--manual`** — writer describes what changed (new passage without a file, or direct corrections).
+- **`--lore "<lore>"`** — apply inline lore text directly.
 
-**Step 1 — Load content.** Read all given files. For `--manual`, ask the writer. For `--lore`, use the inline text and skip to Step 2b.
+**Step 0 — Review check (all modes).** A review pass is required before any update. Check whether a review was run in the current conversation context.
 
-**Step 1a — Draft file check (file mode only).** If a file name was given:
-1. Check whether the file exists in `chapters/`
-2. If it does **not** exist there, check whether it exists under `draft/`
-3. If the file is found **only** in `draft/`
+- **Review exists:** Use its findings as context. For `file` mode, use the "Ready to Commit" list and read `timeline.md` only for the next event ID. Verify all flagged contradictions were resolved — if any remain open, stop and ask before proceeding.
+- **No review found:** Stop and ask:
 
 ```
-"<filename>" is currently in draft/ and is excluded from the knowledge graph.
+A review pass is needed before updating the bible.
+May I run one now?
 
-Would you like me to move it to chapters/<filename> and proceed with the update?
-(Replying "yes" will move the file. If you want to keep it in draft/, copy it to chapters/ yourself first, then re-run update.)
+  yes — I'll run /graphify-novel review [file/content] then continue with the update.
+  no  — update will proceed without graph-informed checks.
 ```
 
-4. If the writer says yes: move the file (`draft/<filename>` → `chapters/<filename>`), then continue with Step 2 using the new `chapters/` path.
-5. If the writer says no: stop. Do not update anything.
+If yes: run the appropriate review (file, passage, or lore-targeted bible check) and surface findings before continuing. If no: proceed but note that graph contradiction checks were skipped.
 
-**Step 2 — Derive updates.** Read `bible/timeline.md` first to find the largest event ID; number new events sequentially from there. Extract: new events, character state changes, thread advancements, new world elements, ambiguous items.
+**Step 1 — Load content.**
 
-**Step 2b — Route lore (`--lore` only).** Determine target file(s) from the lore text:
-- Character trait/state/relationship → `characters/<slug>.md` (look up slug from `characters/_index.md`)
-- World rule/location/faction/artifact → `world/<topic>.md`
-- Plot thread/promise → `threads/<slug>.md`
-- Ambiguous or new file needed → ask before writing.
+| Mode | Load |
+|---|---|
+| `file` | Check `chapters/` then `draft/`; if draft-only, ask to move file to `chapters/` first |
+| `--manual` | Ask writer what changed — character states, deaths, relationships, threads, world elements |
+| `--lore` | Use inline text; route to target file(s): character trait/state → `characters/<slug>.md`; world/faction/artifact → `world/<topic>.md`; thread → `threads/<slug>.md`; ambiguous → ask |
 
-**Step 3 — Resolve ambiguity.** Before writing anything, ask all questions in a single block:
-```
-Before I update the bible, I need to clarify:
+**Step 2 — Resolve ambiguity.** Ask all open questions in one block before writing anything. Skip items already clarified during review. Apply `--intent` without asking.
 
-1. Kira's fate at chapter end — dead / captured / escaped offscreen?
-2. The "old agreement" Mordath mentions — the Binding Pact, a new thread, or intentionally vague?
-3. Elara burns the archive — impulsive, or deliberate (resolves "archive-secret")?
-```
-If `--intent` covers an ambiguous item, apply it without asking.
-
-**Step 4 — Write updates:**
+**Step 3 — Write updates:**
 1. Append new events to `bible/timeline.md` in chapter order.
-2. Update changed character files — state fields and arc log.
-3. Update thread files — events list, current state, status if resolved.
+2. Update character files — state fields and arc log.
+3. Update thread files — events list, current state, resolved status if applicable.
 4. Create new world files.
 5. Update all `_index.md` files.
-6. If a thread resolved: `status: resolved`, `resolved: ch.XX`.
 
-**Step 5 — Update the knowledge graph (REQUIRED).** Rebuild graph (see General Rules).
+**Step 4 — Update the knowledge graph (REQUIRED).** Rebuild graph (see General Rules).
 
 **Step 6 — Report.**
 ```
