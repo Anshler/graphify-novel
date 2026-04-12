@@ -51,6 +51,7 @@ trigger: /graphify-novel
     graph.json
     graph.html
     GRAPH_REPORT.md
+    node-aliases.json          ← entity alias map built by graphify-novel; do not edit manually
   .graphifyignore              ← excludes graphify-out/, draft/, static/ from extraction
 ```
 
@@ -106,14 +107,15 @@ themes: [theme1, theme2]
 # Timeline
 
 ## Act 1
-- [E001] ch.00 (pre-story) — <event> | threads: [<slug>] | characters: [Name]
-- [E002] ch.01 — <event> | threads: [] | characters: [Name, Name]
+- [E001] ch.00 — <event> | threads: [<slug>] | characters: [Name]
+- [E002] ch.01 · chapter1.txt — <event> | threads: [] | characters: [Name, Name]
 ```
 
 Rules:
 - Event IDs reflect insertion order, not story position. A retroactive event gets the next available ID, inserted at its chronological position — out-of-sequence IDs are expected.
 - Thread files reference events by ID only — never duplicate the description.
-- Pre-story events use `ch.00`. If chapter is unknown, use `ch.?`.
+- Pre-story events use `ch.00` with no filename. If the chapter is unknown, use `ch.?` with no filename.
+- For all other events, include the source filename after the chapter ref separated by ` · ` (e.g. `ch.01 · chapter1.txt`). This anchors timeline nodes to their chapter nodes in the knowledge graph, reducing isolated event communities.
 
 ### `bible/characters/<slug>.md`
 
@@ -376,12 +378,11 @@ Ready for:    /graphify-novel status or /graphify-novel review
 5. `bible/premise.md` — only if the passage touches core conflict or world rules
 
 **Step 3b — Query the knowledge graph.**
-Apply the graph existence check (see General Rules) — skip this step if it fails. If graph exists, run:
+Apply the graph existence check (see General Rules) — skip this step if it fails. If graph exists, run a single combined query covering the key characters and central event:
 ```
-/graphify query "<CharacterName> relationships and connected events" --budget 800
-/graphify query "<central event or concept>" --budget 800
+/graphify query "<CharacterName> relationships, connected events, and <central event or concept>" --budget 1200
 ```
-Hold results for the "Implicit Connections" section.
+Apply entity merging (see General Rules) to the results. Hold for the "Implicit Connections" section.
 
 **Step 4 — Check four categories:**
 
@@ -598,8 +599,27 @@ If called with no subcommand, an unrecognized subcommand, or missing required ar
 
 **Conflict between passage and bible:** Always flag it. Never silently accept the passage as correct. The bible is the source of truth until the writer explicitly changes it.
 
-**Entity merging:** When presenting graph results, manually merge nodes that refer to the same entity. Match `chapterN_<name>` nodes to `bible_characters_<slug>` nodes by looking up the character's `name` field in `characters/_index.md`. Graphify prefixes nodes with source file (e.g. `chapter1_elara`, `bible_characters_elara`). If two characters share the same name in prose, use context to determine which slug applies — if uncertain, ask. Note where merging was applied.
+**Entity merging:** Before presenting any graph query results, apply the alias map:
+1. If `graphify-out/node-aliases.json` exists, load it. Replace every node ID that appears as a key with its canonical value before presenting.
+2. If the file does not exist (graph not yet rebuilt since the last update), fall back: read `graphify-out/graph.json` and apply the source_file priority rule from **Rebuild graph** step 3 inline — identify duplicates by label substring match against `_index.md` entries and prefer the node from the most canonical source.
+3. Note merged nodes inline: `Mi [merged from: chapter1_mi, timeline_mi]`.
+4. If two entities share the same name and the merge target is ambiguous, use context to determine which slug applies — if uncertain, ask.
 
-**Rebuild graph:** Run `/graphify --update`.
+**Rebuild graph:** Run `/graphify --update`, then immediately build the alias map:
+
+1. Read `graphify-out/graph.json`. For each node, record its `id`, `label`, and `source_file`.
+2. Read entity names from `bible/characters/_index.md` (Name column), `bible/world/_index.md` (Name column), and `bible/threads/_index.md` (Title column).
+3. For each entity name, find all graph nodes whose label contains that name (case-insensitive substring match). If 2+ nodes match the same entity, they are duplicates — select the **canonical** node using this priority (highest = most canonical):
+   - `bible/characters/<slug>.md` or `bible/world/<topic>.md` — dedicated entity file (highest)
+   - `bible/threads/<slug>.md` — thread file
+   - `bible/characters/_index.md`, `bible/world/_index.md`, or `bible/threads/_index.md` — index stub
+   - `bible/premise.md`, `bible/timeline.md`, or another entity's file — cross-reference extraction
+   - `chapters/` — chapter-level node (lowest)
+4. Map every non-canonical node ID → canonical node ID.
+5. **Concept node pass:** Scan remaining unmapped nodes whose `id` starts with `concept_` or whose `source_file` is `bible/timeline.md`. For each, check whether any other node in the graph has a label that overlaps significantly (3+ shared non-trivial words). If so and one node is from a more canonical source, add the alias. This catches thread-internal philosophy nodes and sub-entities within world files that aren't listed in any `_index.md`.
+6. Write the complete result to `graphify-out/node-aliases.json` as a flat JSON object. Overwrite if the file already exists.
+7. If a match is ambiguous (two entities share the same name, so the correct canonical is unclear), skip that group and note the ambiguity in the command's report.
+
+**Note:** graphify node IDs use `{file_stem}_{entity_slug}` format derived from the source filename — there is no fixed `bible_` prefix. Do not assume any prefix; always derive canonical identity from the `source_file` field.
 
 **Graph existence check:** If `graphify-out/graph.json` does not exist, note: *"Knowledge graph not built yet — run `/graphify-novel update` after your first chapter."* Then skip or stop as the calling step requires.
