@@ -75,9 +75,8 @@ Would you like me to install it for you? (yes / no)
 
 - If **yes**: run `pip install graphifyy && graphify install`. Once complete, confirm installation succeeded and continue.
 - If **no**: output `Install it manually from: https://github.com/safishamsi/graphify — then re-run the command` and stop.
-```
 
-- Do not download or execute remote installation from external sources automatically without user approval.
+Do not download or execute remote installation from external sources automatically without user approval.
 
 Do not proceed until graphify is installed.
 
