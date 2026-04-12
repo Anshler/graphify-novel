@@ -20,6 +20,7 @@ jobs:
       - name: Get PR diff
         run: |
           git diff origin/${{ github.base_ref }}...HEAD > pr.diff
+          # Truncate to 100KB to stay within API limits
           head -c 102400 pr.diff > pr_truncated.diff
 
       - name: Review with Claude Sonnet
@@ -30,17 +31,25 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           DIFF=$(cat pr_truncated.diff)
-          PROMPT="Review this pull request.\n\nTitle: $PR_TITLE\n\nDescription: $PR_BODY\n\nDiff:\n$DIFF\n\nCover: correctness, bugs, security, code quality. Lead with critical issues. Use markdown."
 
-          RESPONSE=$(jq -n --arg prompt "$PROMPT" '{
-            model: "claude-sonnet-4-6",
-            max_tokens: 2048,
-            messages: [{role: "user", content: $prompt}]
-          }' | curl -s https://api.anthropic.com/v1/messages \
-            -H "x-api-key: $ANTHROPIC_API_KEY" \
-            -H "anthropic-version: 2023-06-01" \
-            -H "content-type: application/json" \
-            -d @-)
+          RESPONSE=$(jq -n \
+            --arg title "$PR_TITLE" \
+            --arg body "$PR_BODY" \
+            --arg diff "$DIFF" \
+            '{
+              model: "claude-sonnet-4-6",
+              max_tokens: 2048,
+              messages: [{role: "user", content: "Review this pull request.\n\nTitle: \($title)\n\nDescription: \($body)\n\nDiff:\n\($diff)\n\nCover: correctness, bugs, security, code quality. Lead with critical issues. Use markdown."}]
+            }' | curl -s https://api.anthropic.com/v1/messages \
+              -H "x-api-key: $ANTHROPIC_API_KEY" \
+              -H "anthropic-version: 2023-06-01" \
+              -H "content-type: application/json" \
+              -d @-)
+
+          if echo "$RESPONSE" | jq -e '.error' > /dev/null 2>&1; then
+            echo "API error: $(echo "$RESPONSE" | jq -r '.error.message')"
+            exit 1
+          fi
 
           REVIEW=$(echo "$RESPONSE" | jq -r '.content[0].text')
           echo "review<<EOF_REVIEW" >> $GITHUB_OUTPUT
