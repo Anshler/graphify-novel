@@ -1,4 +1,4 @@
-# graphify-novel
+# graphify-novel: Writing assistant with knowledge graph
 
 Cứ viết. Đừng lo tracking.
 
