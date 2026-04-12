@@ -1,5 +1,7 @@
 # graphify-novel
 
+[English](README.md) | [Tiếng Việt](README.vi.md)
+
 Write. Don't track.
 
 As your story grows, so does the overhead. Where was this character last seen, did you already establish that rule, which threads are still open? ```graphify-novel``` handles all of that so you can stay in the prose.
