@@ -24,63 +24,43 @@ jobs:
           head -c 102400 pr.diff > pr_truncated.diff
 
       - name: Review with Claude Sonnet
-        run: |
-          python3 << 'EOF'
-          import json, os, urllib.request, urllib.error
-
-          diff = open('pr_truncated.diff').read()
-          title = os.environ.get('PR_TITLE', '')
-          body = os.environ.get('PR_BODY', '') or '(no description)'
-
-          prompt = f"""Review this pull request and post a concise code review.
-
-Title: {title}
-
-Description:
-{body}
-
-Diff:
-```
-{diff}
-```
-
-Cover: correctness, potential bugs, security issues, code quality.
-Lead with critical issues. Be specific and actionable. Use markdown."""
-
-          payload = {
-              "model": "claude-sonnet-4-6",
-              "max_tokens": 2048,
-              "messages": [{"role": "user", "content": prompt}]
-          }
-
-          req = urllib.request.Request(
-              "https://api.anthropic.com/v1/messages",
-              data=json.dumps(payload).encode(),
-              headers={
-                  "x-api-key": os.environ["ANTHROPIC_API_KEY"],
-                  "anthropic-version": "2023-06-01",
-                  "content-type": "application/json",
-              },
-          )
-
-          with urllib.request.urlopen(req) as resp:
-              result = json.loads(resp.read())
-
-          review = result["content"][0]["text"]
-
-          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"review<<EOF_REVIEW\n{review}\nEOF_REVIEW\n")
-          EOF
+        id: review
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          RESPONSE=$(jq -n \
+            --arg title "$PR_TITLE" \
+            --arg body "$PR_BODY" \
+            --rawfile diff pr_truncated.diff \
+            '{
+              model: "claude-sonnet-4-6",
+              max_tokens: 2048,
+              messages: [{role: "user", content: "Review this pull request.\n\nTitle: \($title)\n\nDescription: \($body)\n\nDiff:\n\($diff)\n\nCover: correctness, bugs, security, code quality. Lead with critical issues. Use markdown."}]
+            }' | curl -sf https://api.anthropic.com/v1/messages \
+              -H "x-api-key: $ANTHROPIC_API_KEY" \
+              -H "anthropic-version: 2023-06-01" \
+              -H "content-type: application/json" \
+              -d @-)
+
+          if echo "$RESPONSE" | jq -e '.error' > /dev/null 2>&1; then
+            echo "API error: $(echo "$RESPONSE" | jq -r '.error.message')"
+            exit 1
+          fi
+
+          REVIEW=$(echo "$RESPONSE" | jq -r '.content[0].text')
+          echo "review<<EOF_REVIEW" >> $GITHUB_OUTPUT
+          echo "$REVIEW" >> $GITHUB_OUTPUT
+          echo "EOF_REVIEW" >> $GITHUB_OUTPUT
 
       - name: Post review comment
         uses: actions/github-script@v7
+        env:
+          REVIEW: ${{ steps.review.outputs.review }}
         with:
           script: |
-            const review = `${{ steps.review-with-claude-sonnet.outputs.review }}`;
+            const review = process.env.REVIEW;
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
