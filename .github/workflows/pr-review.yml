@@ -1,0 +1,89 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > pr.diff
+          # Truncate to 100KB to stay within API limits
+          head -c 102400 pr.diff > pr_truncated.diff
+
+      - name: Review with Claude Sonnet
+        run: |
+          python3 << 'EOF'
+          import json, os, urllib.request, urllib.error
+
+          diff = open('pr_truncated.diff').read()
+          title = os.environ.get('PR_TITLE', '')
+          body = os.environ.get('PR_BODY', '') or '(no description)'
+
+          prompt = f"""Review this pull request and post a concise code review.
+
+Title: {title}
+
+Description:
+{body}
+
+Diff:
+```
+{diff}
+```
+
+Cover: correctness, potential bugs, security issues, code quality.
+Lead with critical issues. Be specific and actionable. Use markdown."""
+
+          payload = {
+              "model": "claude-sonnet-4-6",
+              "max_tokens": 2048,
+              "messages": [{"role": "user", "content": prompt}]
+          }
+
+          req = urllib.request.Request(
+              "https://api.anthropic.com/v1/messages",
+              data=json.dumps(payload).encode(),
+              headers={
+                  "x-api-key": os.environ["ANTHROPIC_API_KEY"],
+                  "anthropic-version": "2023-06-01",
+                  "content-type": "application/json",
+              },
+          )
+
+          with urllib.request.urlopen(req) as resp:
+              result = json.loads(resp.read())
+
+          review = result["content"][0]["text"]
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"review<<EOF_REVIEW\n{review}\nEOF_REVIEW\n")
+          EOF
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+
+      - name: Post review comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const review = `${{ steps.review-with-claude-sonnet.outputs.review }}`;
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `### Claude Sonnet Review\n\n${review}`,
+            });
