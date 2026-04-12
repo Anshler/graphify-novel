@@ -436,7 +436,7 @@ If contradictions are resolved, these updates are queued for /graphify-novel upd
 
 **Step 0 — Review check (all modes).** A review pass is required before any update. Check whether a review was run in the current conversation context.
 
-- **Review exists:** Use its findings as context. For `file` mode, use the "Ready to Commit" list and read `timeline.md` only for the next event ID. Verify all flagged contradictions were resolved — if any remain open, stop and ask before proceeding.
+- **Review exists:** Use the "Ready to Commit" list as the update set and read `timeline.md` only for the next event ID. Verify all flagged contradictions were resolved — if any remain open, stop and ask before proceeding.
 - **No review found:** Stop and ask:
 
 ```
