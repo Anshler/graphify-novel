@@ -1,25 +1,44 @@
 name: Claude PR Review
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
 
 jobs:
   review:
     runs-on: ubuntu-latest
+    if: |
+      github.event.issue.pull_request != null &&
+      contains(github.event.comment.body, '@claude-review')
     permissions:
       pull-requests: write
       contents: read
 
     steps:
+      - name: Get PR metadata
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            core.setOutput('base_ref', pr.data.base.ref);
+            core.setOutput('head_ref', pr.data.head.ref);
+            core.setOutput('title', pr.data.title);
+            core.setOutput('body', pr.data.body || '');
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ steps.pr.outputs.head_ref }}
 
       - name: Get PR diff
         run: |
-          git diff origin/${{ github.base_ref }}...HEAD > pr.diff
+          git diff origin/${{ steps.pr.outputs.base_ref }}...HEAD > pr.diff
           # Truncate to 100KB to stay within API limits
           head -c 102400 pr.diff > pr_truncated.diff
 
@@ -27,8 +46,8 @@ jobs:
         id: review
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_TITLE: ${{ steps.pr.outputs.title }}
+          PR_BODY: ${{ steps.pr.outputs.body }}
         run: |
           RESPONSE=$(jq -n \
             --arg title "$PR_TITLE" \
