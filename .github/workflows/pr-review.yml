@@ -30,17 +30,15 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          DIFF=$(cat pr_truncated.diff)
-
           RESPONSE=$(jq -n \
             --arg title "$PR_TITLE" \
             --arg body "$PR_BODY" \
-            --arg diff "$DIFF" \
+            --rawfile diff pr_truncated.diff \
             '{
               model: "claude-sonnet-4-6",
               max_tokens: 2048,
               messages: [{role: "user", content: "Review this pull request.\n\nTitle: \($title)\n\nDescription: \($body)\n\nDiff:\n\($diff)\n\nCover: correctness, bugs, security, code quality. Lead with critical issues. Use markdown."}]
-            }' | curl -s https://api.anthropic.com/v1/messages \
+            }' | curl -sf https://api.anthropic.com/v1/messages \
               -H "x-api-key: $ANTHROPIC_API_KEY" \
               -H "anthropic-version: 2023-06-01" \
               -H "content-type: application/json" \
