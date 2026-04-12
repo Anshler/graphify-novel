@@ -1,4 +1,4 @@
-# graphify-novel
+# graphify-novel: Writing assistant with knowledge graph
 
 [English](README.md) | [Tiếng Việt](README.vi.md)
 
