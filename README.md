@@ -16,7 +16,7 @@ This skill uses [graphify](https://github.com/safishamsi/graphify) under the hoo
 
 - Any coding assistant (Copilot, Claude, etc)
 
-- [graphify](https://github.com/safishamsi/graphify) skill installed. If not already installed, the assistant will prompt you to install it manually before continuing.
+- [graphify](https://github.com/safishamsi/graphify) skill installed. If not already installed, the assistant will lep you install it before continuing.
 
 ---
 
