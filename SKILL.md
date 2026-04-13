@@ -372,23 +372,23 @@ Ready for:    /graphify-novel status or /graphify-novel review
 
 **Step 2 — Extract from passage:** characters present/referenced, locations, facts stated, events that occur, threads touched, new entities.
 
-**Step 3 — Load bible and query graph in parallel.** Both depend only on the entity list from Step 2 and are independent of each other — run simultaneously.
+**Step 3 — Query graph**
 
-*Bible files:*
-1. `bible/timeline.md` — last 10 entries + any entries for characters in this passage
-2. `bible/characters/_index.md` — to resolve character names to slugs, then load `characters/<slug>.md` for each
-3. Thread files for any thread referenced
-4. `bible/world/_index.md` first, then individual world files for anything referenced
-5. `bible/premise.md` — only if the passage touches core conflict or world rules
-
-*Knowledge graph:*
 Apply the graph existence check (see General Rules) — skip if it fails. If graph exists, run a single combined query covering the key characters and central event:
 ```
 /graphify query "<CharacterName> relationships, connected events, and <central event or concept>" --budget 1200
 ```
 Hold graph results for the "Implicit Connections" section.
 
-**Step 4 — Check four categories:**
+**Step 4 — Load bible** Depend on previous step.
+
+1. `bible/timeline.md` — last 10 entries + any entries for characters in this passage
+2. `bible/characters/_index.md` — to resolve character names to slugs, then load `characters/<slug>.md` for each
+3. Thread files for any thread referenced
+4. `bible/world/_index.md` first, then individual world files for anything referenced
+5. `bible/premise.md` — only if the passage touches core conflict or world rules
+
+**Step 5 — Check four categories:**
 
 **CONTRADICTION** (must fix): character location impossible given last known position; character knows something they haven't been shown to learn; belief/wound contradicts arc log; world rule violated; timeline order impossible.
 
@@ -398,7 +398,7 @@ Hold graph results for the "Implicit Connections" section.
 
 **NEW BIBLE ENTRIES NEEDED** (for update step): new events, character state changes, thread advancements, new world elements.
 
-**Step 5 — Present findings.**
+**Step 6 — Present findings.**
 ```
 ## Review: <filename or "passage">
 Intent: <stated intent, or "none provided">
@@ -425,7 +425,7 @@ If contradictions are resolved, these updates are queued for /graphify-novel upd
 - Thread "binding-pact" — current state updated, events += [E048]
 ```
 
-**Step 6 — Wait.** Do not write anything to the bible. The update step requires explicit writer action.
+**Step 7— Wait.** Do not write anything to the bible. The update step requires explicit writer action.
 
 ---
 
