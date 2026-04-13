@@ -51,7 +51,7 @@ trigger: /graphify-novel
     graph.json
     graph.html
     GRAPH_REPORT.md
-  .graphifyignore              ← excludes graphify-out/, draft/, static/ from extraction
+  .graphifyignore              ← controls what graphify extracts; see init for contents
 ```
 
 `bible/` — structured state: what is true now. Queried by direct file reads.
@@ -231,7 +231,12 @@ Create `<project-folder>/.graphifyignore` if it does not already exist:
 graphify-out/
 draft/
 static/
+bible/characters/
+bible/threads/
+bible/timeline.md
 ```
+
+`bible/world/` and `bible/premise.md` are intentionally included — they contain authorial lore (world rules, faction histories, artifact details) that helps graphify find hidden connections not explicit in chapter prose. Character, thread, and timeline files are excluded because they duplicate chapter-extracted content and cause redundant nodes.
 
 **Step 4 — Populate the bible.** Write all files per schemas above:
 - One character file per named character
@@ -301,7 +306,7 @@ Optional: paste a one-line premise or working title so I can seed premise.md.
 Accept whatever the writer gives. If skipped, note it for Step 6.
 
 **Step 4 — Create the folder structure.**
-Same as standard init Step 3. Create `.graphifyignore` if it does not already exist.
+Same as standard init Step 3. Create `.graphifyignore` with the same contents if it does not already exist.
 
 **Step 5 — Sweep batches via sub-agents.**
 
@@ -363,23 +368,25 @@ Ready for:    /graphify-novel status or /graphify-novel review
 
 **Purpose:** Check a passage against the bible. Flag contradictions, suggest missed thread opportunities, and list what update would need to commit if approved.
 
-**Step 1 — Load passage and intent.** Read the file (if not in `chapters/` then check `draft/`), or if `--passage`, prompt the writer to paste. Hold `--intent` context for Steps 3b, 4, and 5.
+**Step 1 — Load passage and intent.** Read the file (if not in `chapters/` then check `draft/`), or if `--passage`, prompt the writer to paste. Hold `--intent` context for Steps 3, 4, and 5.
 
 **Step 2 — Extract from passage:** characters present/referenced, locations, facts stated, events that occur, threads touched, new entities.
 
-**Step 3 — Load relevant bible files.**
+**Step 3 — Load bible and query graph in parallel.** Both depend only on the entity list from Step 2 and are independent of each other — run simultaneously.
+
+*Bible files:*
 1. `bible/timeline.md` — last 10 entries + any entries for characters in this passage
-2. `bible/characters/_index.md` — to resolve character names in the passage to slugs, then load `characters/<slug>.md` for each
+2. `bible/characters/_index.md` — to resolve character names to slugs, then load `characters/<slug>.md` for each
 3. Thread files for any thread referenced
 4. `bible/world/_index.md` first, then individual world files for anything referenced
 5. `bible/premise.md` — only if the passage touches core conflict or world rules
 
-**Step 3b — Query the knowledge graph.**
-Apply the graph existence check (see General Rules) — skip this step if it fails. If graph exists, run a single combined query covering the key characters and central event:
+*Knowledge graph:*
+Apply the graph existence check (see General Rules) — skip if it fails. If graph exists, run a single combined query covering the key characters and central event:
 ```
 /graphify query "<CharacterName> relationships, connected events, and <central event or concept>" --budget 1200
 ```
-Hold results for the "Implicit Connections" section. When presenting, prefer nodes with `char_`, `world_`, or `thread_` prefixes over `index_`, `concept_`, or chapter-sourced duplicates of the same entity.
+Hold graph results for the "Implicit Connections" section.
 
 **Step 4 — Check four categories:**
 
@@ -587,6 +594,6 @@ If called with no subcommand, an unrecognized subcommand, or missing required ar
 
 **Rebuild graph:** Run `/graphify --update`.
 
-**Node IDs in results:** graphify uses `{file_stem}_{entity_slug}` format — no fixed prefix. When presenting query results, if duplicates appear for the same entity, prefer nodes whose `id` starts with `char_`, `world_`, or `thread_` over `index_`, `concept_`, or chapter-sourced nodes.
+**Node IDs in results:** graphify uses `{file_stem}_{entity_slug}` format — no fixed prefix.
 
 **Graph existence check:** If `graphify-out/graph.json` does not exist, note: *"Knowledge graph not built yet — run `/graphify-novel update` after your first chapter."* Then skip or stop as the calling step requires.
