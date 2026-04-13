@@ -51,7 +51,6 @@ trigger: /graphify-novel
     graph.json
     graph.html
     GRAPH_REPORT.md
-    node-aliases.json          ← entity alias map built by graphify-novel; do not edit manually
   .graphifyignore              ← excludes graphify-out/, draft/, static/ from extraction
 ```
 
@@ -59,8 +58,6 @@ trigger: /graphify-novel
 `graphify-out/` — relationship graph: how things connect across the full story. Built from both `chapters/` and `bible/`. Neither replaces the other.
 `draft/` — excluded from graphify extraction; use for in-progress passages not yet canon.
 `static/` — excluded from graphify extraction; use for images, gifs, or any files you don't want in the bible or graph.
-
-**Entity identity:** See General Rules → Entity merging.
 
 ---
 
@@ -382,7 +379,7 @@ Apply the graph existence check (see General Rules) — skip this step if it fai
 ```
 /graphify query "<CharacterName> relationships, connected events, and <central event or concept>" --budget 1200
 ```
-Apply entity merging (see General Rules) to the results. Hold for the "Implicit Connections" section.
+Hold results for the "Implicit Connections" section. When presenting, prefer nodes with `char_`, `world_`, or `thread_` prefixes over `index_`, `concept_`, or chapter-sourced duplicates of the same entity.
 
 **Step 4 — Check four categories:**
 
@@ -431,8 +428,8 @@ If contradictions are resolved, these updates are queued for /graphify-novel upd
 
 ### Modes
 - **`[file] [--intent "..."]`** — derive updates from a chapter file.
-- **`--manual`** — writer describes what changed (new passage without a file, or direct corrections).
-- **`--lore "<lore>"`** — apply inline lore text directly.
+- **`--manual`** — conversational update. Ask: "Which files changed, or describe what's different." Accept files, prose, or both.
+- **`--lore "<lore>"`** — apply inline lore text.
 
 **Step 0 — Review check (all modes).** A review pass is required before any update. Check whether a review was run in the current conversation context.
 
@@ -588,27 +585,8 @@ If called with no subcommand, an unrecognized subcommand, or missing required ar
 
 **Conflict between passage and bible:** Always flag it. Never silently accept the passage as correct. The bible is the source of truth until the writer explicitly changes it.
 
-**Entity merging:** Before presenting any graph query results, apply the alias map:
-1. If `graphify-out/node-aliases.json` exists, load it. Replace every node ID that appears as a key with its canonical value before presenting.
-2. If the file does not exist (graph not yet rebuilt since the last update), fall back: read `graphify-out/graph.json` and apply the source_file priority rule from **Rebuild graph** step 3 inline — identify duplicates by label substring match against `_index.md` entries and prefer the node from the most canonical source.
-3. Note merged nodes inline: `Mi [merged from: chapter1_mi, timeline_mi]`.
-4. If two entities share the same name and the merge target is ambiguous, use context to determine which slug applies — if uncertain, ask.
+**Rebuild graph:** Run `/graphify --update`.
 
-**Rebuild graph:** Run `/graphify --update`, then immediately build the alias map:
-
-1. Read `graphify-out/graph.json`. For each node, record its `id`, `label`, and `source_file`.
-2. Read entity names from `bible/characters/_index.md` (Name column), `bible/world/_index.md` (Name column), and `bible/threads/_index.md` (Title column).
-3. For each entity name, find all graph nodes whose label contains that name (case-insensitive substring match). If 2+ nodes match the same entity, they are duplicates — select the **canonical** node using this priority (highest = most canonical):
-   - `bible/characters/<slug>.md` or `bible/world/<topic>.md` — dedicated entity file (highest)
-   - `bible/threads/<slug>.md` — thread file
-   - `bible/characters/_index.md`, `bible/world/_index.md`, or `bible/threads/_index.md` — index stub
-   - `bible/premise.md`, `bible/timeline.md`, or another entity's file — cross-reference extraction
-   - `chapters/` — chapter-level node (lowest)
-4. Map every non-canonical node ID → canonical node ID.
-5. **Concept node pass:** Scan remaining unmapped nodes whose `id` starts with `concept_` or whose `source_file` is `bible/timeline.md`. For each, check whether any other node in the graph has a label that overlaps significantly (3+ shared non-trivial words). If so and one node is from a more canonical source, add the alias. This catches thread-internal philosophy nodes and sub-entities within world files that aren't listed in any `_index.md`.
-6. Write the complete result to `graphify-out/node-aliases.json` as a flat JSON object. Overwrite if the file already exists.
-7. If a match is ambiguous (two entities share the same name, so the correct canonical is unclear), skip that group and note the ambiguity in the command's report.
-
-**Note:** graphify node IDs use `{file_stem}_{entity_slug}` format derived from the source filename — there is no fixed `bible_` prefix. Do not assume any prefix; always derive canonical identity from the `source_file` field.
+**Node IDs in results:** graphify uses `{file_stem}_{entity_slug}` format — no fixed prefix. When presenting query results, if duplicates appear for the same entity, prefer nodes whose `id` starts with `char_`, `world_`, or `thread_` over `index_`, `concept_`, or chapter-sourced nodes.
 
 **Graph existence check:** If `graphify-out/graph.json` does not exist, note: *"Knowledge graph not built yet — run `/graphify-novel update` after your first chapter."* Then skip or stop as the calling step requires.
