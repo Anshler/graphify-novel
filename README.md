@@ -150,6 +150,15 @@ Shows open threads, character states, unresolved setups (Chekhov's guns), and st
 
 Neither replaces the other. The bible answers "where is Elara now?"; the graph answers "how did Elara and the Obsidian Throne end up connected?"
 
+Note: ```.graphifyignore``` let you remove certain file/folder out of the graph. It currently ignores the following:
+```
+bible/characters/
+bible/threads/
+bible/timeline.md
+```
+
+As they are either repeated information from chapters or are chronological trackers not suited for graph. Feel free to edit it.
+
 ### Tips
 
 If you're unsure what command to use, just chat in natural language, ask the AI to look into the graphify-novel skill.

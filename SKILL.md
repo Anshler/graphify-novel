@@ -368,33 +368,34 @@ Ready for:    /graphify-novel status or /graphify-novel review
 
 **Purpose:** Check a passage against the bible. Flag contradictions, suggest missed thread opportunities, and list what update would need to commit if approved.
 
-**Step 1 — Load passage and intent.** Read the file (if not in `chapters/` then check `draft/`), or if `--passage`, prompt the writer to paste. Hold `--intent` context for Steps 3, 4, and 5.
+**Step 1 — Load passage and intent.** Read the file (if not in `chapters/` then check `draft/`), or if `--passage`, prompt the writer to paste. Hold `--intent` context for Steps 2–5.
 
 **Step 2 — Extract from passage:** characters present/referenced, locations, facts stated, events that occur, threads touched, new entities.
 
-**Step 3 — Query graph**
+**Step 3 — Query graph** (cross-chapter connections → feeds Step 5 checks)
 
 Apply the graph existence check (see General Rules) — skip if it fails. If graph exists, run a single combined query covering the key characters and central event:
 ```
 /graphify query "<CharacterName> relationships, connected events, and <central event or concept>" --budget 1200
 ```
-Hold graph results for the "Implicit Connections" section.
+Hold results for Step 5.
 
-**Step 4 — Load bible** Depend on previous step.
+**Step 4 — Load bible** (current ground truth → feeds Step 5 checks; independent of Step 3)
 
+Using entities from Step 2:
 1. `bible/timeline.md` — last 10 entries + any entries for characters in this passage
-2. `bible/characters/_index.md` — to resolve character names to slugs, then load `characters/<slug>.md` for each
+2. `bible/characters/_index.md` → load `characters/<slug>.md` for each character
 3. Thread files for any thread referenced
-4. `bible/world/_index.md` first, then individual world files for anything referenced
+4. `bible/world/_index.md` → individual world files for anything referenced
 5. `bible/premise.md` — only if the passage touches core conflict or world rules
 
 **Step 5 — Check four categories:**
 
-**CONTRADICTION** (must fix): character location impossible given last known position; character knows something they haven't been shown to learn; belief/wound contradicts arc log; world rule violated; timeline order impossible.
+**CONTRADICTION** (must fix): impossible location/knowledge/wound given bible state; world rule violated; timeline impossible. Also: a relationship portrayed as established that is absent from the graph, or entities with no prior co-occurrence presented as familiar.
 
-**CONTINUITY GAP** (should address): reference to an unlogged past event; implied relationship not in bible; unstated world history.
+**CONTINUITY GAP** (should address): unlogged past event; implied relationship not in bible; unstated world history. Also: a graph edge implies a prior connection that the passage ignores.
 
-**OPEN THREAD OPPORTUNITY** (suggestion): an open thread involves passage characters but wasn't advanced; a prior setup could have paid off here. If `--intent` was given, only surface threads plausibly aligned with it.
+**OPEN THREAD OPPORTUNITY** (suggestion): open thread involving passage characters not advanced; prior setup unused. Prefer threads whose key entities appear in the graph results over those merely sharing a character name. Filter by `--intent` if given.
 
 **NEW BIBLE ENTRIES NEEDED** (for update step): new events, character state changes, thread advancements, new world elements.
 
@@ -413,10 +414,10 @@ Intent: <stated intent, or "none provided">
 ### Thread Opportunities  ← suggestions
 - Thread "The Binding Pact" (open) involves Elara and is unaddressed here.
 
-### Implicit Connections  ← from knowledge graph
+### Implicit Connections  ← graph findings not resolved into a check above
 - ch.02 and this chapter both end with Elara destroying something she was meant to protect.
 - Mordath's tone clusters with ch.06 (lineage reveal): Mordath / Black Fort / coercion.
-(Omit section if graph.json does not exist.)
+(Omit section if graph.json does not exist or if all graph findings were already surfaced above.)
 
 ### Ready to Commit
 If contradictions are resolved, these updates are queued for /graphify-novel update:

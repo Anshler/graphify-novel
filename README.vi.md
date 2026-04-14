@@ -148,6 +148,15 @@ Hiển thị các tuyến truyện đang mở, trạng thái nhân vật, các s
 
 Hai thứ này không thay thế nhau. Bible trả lời "Elara hiện ở đâu?"; graph trả lời "Elara và Ngai vàng Obsidian kết nối với nhau như thế nào?"
 
+Lưu ý: ```.graphifyignore``` cho phép bạn loại bỏ file/thư mục nhất định khỏi graph. Hiện tại nó đang bỏ qua:
+```
+bible/characters/
+bible/threads/
+bible/timeline.md
+```
+
+Vì chúng là thông tin lặp lại từ các chương, hoặc là để track thời gian tuyến tính không phù hợp với graph. Bạn có thể chỉnh sửa theo ý muốn.
+
 ### Mẹo
 
 Nếu bạn không chắc nên dùng lệnh nào, cứ chat bằng ngôn ngữ tự nhiên — hỏi AI tìm hiểu về skill graphify-novel và trả lời bạn.
