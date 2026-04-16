@@ -563,7 +563,7 @@ Read `bible/threads/_index.md` and all thread files. Print grouped by status.
 /graphify path "Node A" "Node B"                    # shortest path
 ```
 
-**Step 3 — Supplement with direct reads if needed.** After getting graphify and bible results, assess whether they fully answer the question. If not, or if the user mentions information seemingly from chapters yet not covered by the graph or bible, you may read the relevant chapters directly. The ch.XX name does not always correspond to actual filename. Use chapter filenames if present or load chapters folder to find the right file.
+**Step 3 — Supplement with direct reads if needed.** After getting graphify and bible results, assess whether they fully answer the question. If not, or if the user mentions specific in-chapter details not covered by the graph or bible, you may read the relevant chapters directly. The ch.XX name does not always correspond to actual filename. Use chapter filenames if present or load chapters folder to find the right file.
 
 **Step 4 — Interpret and present.** Do not dump raw graphify output. Translate to plain story language. Always note which edges are EXTRACTED (explicit in prose) vs. INFERRED (graphify deduced — suggestions, not facts). If you supplemented with direct chapter reads, note which claims come from the graph vs. the prose.
 
