@@ -45,7 +45,7 @@ npx skills add Anshler/graphify-novel
 
 Bạn có thể bắt đầu với một dự án trống. Nếu là dự án có sẵn, hãy đảm bảo các chương đã hoàn thành nằm trong `chapters/`, bản nháp đang viết trong `draft/` và file tĩnh trong `static/`.
 
-Nếu bạn đã có sẵn cấu trúc tracking câu chuyện, nó sẽ không tương thích. Hãy chuyển chúng ra ngoài dự án rồi copy paste nội dung đó vô trúc mới sau khi khởi tạo bible.
+Nếu bạn đã có sẵn cấu trúc tracking câu chuyện, nó sẽ không tương thích. Hãy chuyển chúng ra ngoài dự án rồi copy paste nội dung đó vô cấu trúc mới sau khi khởi tạo bible.
 
 ---
 
