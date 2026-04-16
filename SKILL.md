@@ -563,7 +563,9 @@ Read `bible/threads/_index.md` and all thread files. Print grouped by status.
 /graphify path "Node A" "Node B"                    # shortest path
 ```
 
-**Step 3 — Interpret and present.** Do not dump raw graphify output. Translate to plain story language. Always note which edges are EXTRACTED (explicit in prose) vs. INFERRED (graphify deduced — suggestions, not facts).
+**Step 3 — Supplement with direct reads if needed.** After getting graphify and bible results, assess whether they fully answer the question, if not, you may read the relevant chapters directly. The ch.XX name does not always correspond to actual filename. Use chapter filenames if present or load chapters folder to find the right file.
+
+**Step 4 — Interpret and present.** Do not dump raw graphify output. Translate to plain story language. Always note which edges are EXTRACTED (explicit in prose) vs. INFERRED (graphify deduced — suggestions, not facts). If you supplemented with direct chapter reads, note which claims come from the graph vs. the prose.
 
 ```
 ## Query: "how is Elara connected to the Obsidian Throne?"
